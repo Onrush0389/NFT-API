@@ -17,5 +17,13 @@ model user {
   walletAddress String @unique
   privateKey    String @unique
   balance       Int    @default(0)
-  tokenId       String @unique
+}
+
+model token {
+  id            String @id @default(auto()) @map("_id") @db.ObjectId
+  tokeId          String @unique
+  owner         String
+  price         Int
+  NFTurl        String @unique
+  walletAddress String @unique
 }

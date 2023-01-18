@@ -5,5 +5,4 @@ export class GetUserDto {
   walletAddress: string;
   privateKey: string;
   balance: number;
-  tokenId: string;
 }

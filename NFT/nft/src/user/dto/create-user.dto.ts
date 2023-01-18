@@ -11,5 +11,4 @@ export class CreateUserDto {
   @IsNotEmpty()
   NFTurl: string;
   balance: number;
-  tokenId: string;
 }

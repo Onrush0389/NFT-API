@@ -21,12 +21,15 @@ describe("Given MyNFT", function () {
       otherAddress.address,
       "https://www.google.com/hk"
     );
-    await tx.wait();
+    const tokenId = await tx.wait();
 
     tokenOwner = await myToken.ownerOf(1);
     expect(tokenOwner).to.equal(otherAddress.address);
 
     tokenURI = await myToken.tokenURI(1);
     expect(tokenURI).to.equal("https://www.google.com/hk");
+
+    console.log("owner", owner.address);
+    console.log("tokenID", tokenId.logs[0].data);
   });
 });

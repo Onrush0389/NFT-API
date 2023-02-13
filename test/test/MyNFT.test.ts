@@ -8,7 +8,7 @@ describe("Given MyNFT", function () {
     const myToken = await MyToken.deploy();
     await myToken.deployed();
 
-    let tx = await myToken.awardItem(owner.address, "https://www.google.com");
+    let tx = await myToken.awardToken(owner.address, "https://www.google.com");
     await tx.wait();
 
     let tokenOwner = await myToken.ownerOf(0);
@@ -17,7 +17,7 @@ describe("Given MyNFT", function () {
     let tokenURI = await myToken.tokenURI(0);
     expect(tokenURI).to.equal("https://www.google.com");
 
-    tx = await myToken.awardItem(
+    tx = await myToken.awardToken(
       otherAddress.address,
       "https://www.google.com/hk"
     );

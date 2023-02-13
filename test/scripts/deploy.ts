@@ -1,15 +1,17 @@
 import { ethers } from "hardhat";
 
 async function main() {
-  const Contract = await ethers.getContractFactory("MSBD5017Token");
-  const contract = await Contract.deploy();
-
-  await contract.deployed();
-  console.log("Contract deployed to:", contract.address);
+  const SmartContract = await ethers.getContractFactory("MyNFT");
+  //Coin is the name of your contract
+  const NFT = await SmartContract.deploy();
+  await NFT.deployed();
+  console.log("NFT deployed to:", NFT.address);
+  // const CoinContract = await ethers.getContractFactory("Coin");
+  // //Coin is the name of your contract
+  // const Coin = await CoinContract.deploy(1000);
+  // await Coin.deployed();
+  // console.log("Coin deployed to:", Coin.address);
 }
-
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
 main().catch((error) => {
   console.error(error);
   process.exitCode = 1;

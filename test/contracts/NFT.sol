@@ -11,15 +11,15 @@ contract MyNFT is ERC721URIStorage {
 
     constructor() ERC721("MyNFT", "NFT") {}
 
-    function awardItem(address player, string memory tokenURI)
+    function awardToken(address owner, string memory tokenURI)
         public
         returns (uint256)
     {
-        uint256 newItemId = _tokenIds.current();
-        _mint(player, newItemId);
-        _setTokenURI(newItemId, tokenURI);
-
+        uint256 tokenId = _tokenIds.current();
+        _mint(owner, tokenId);
+        _setTokenURI(tokenId, tokenURI);
         _tokenIds.increment();
-        return newItemId;
+        return tokenId;
     }
+
 }

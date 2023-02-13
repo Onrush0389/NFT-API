@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { ethers } from 'ethers';
 import { PrismaService } from 'src/prisma.service';
@@ -7,34 +7,44 @@ import { GetUserDto } from './dto/get-user.dto';
 
 @Injectable()
 export class UserService {
-  getSingleUser() { //create a random wallet
-    throw new Error('Method not implemented.');
-  }
-  private users: CreateUserDto[] = [];
+  //private users: CreateUserDto[] = [];
 
   constructor(private readonly prisma: PrismaService) {}
 
   async insertUser(user: CreateUserDto): Promise<CreateUserDto> {
-    //create a random wallet
-    const wallet = ethers.Wallet.createRandom();
-    user.walletAddress = wallet.address;
-    user.privateKey = wallet.privateKey;
-    user.balance = 0;
+    //find the user whether it is already exist or not if exsit stop the process
 
-    // console.log("Wallet address", wallet.address);
-    // console.log("Wallet private key", wallet.privateKey);
-    // console.log("Wallet mnemonic", wallet.mnemonic);
+    const findUserurl = await this.getUser(user.NFTurl);
 
-    return this.prisma.user.create({
-      data: user,
-    });
+    if (findUserurl) {
+      throw new NotFoundException('NFTurl already exists!');
+    } else {
+      //create a random wallet
+      const wallet = ethers.Wallet.createRandom();
+      user.walletAddress = wallet.address;
+      user.privateKey = wallet.privateKey;
+      user.balance = 0;
+
+      // console.log("Wallet address", wallet.address);
+      // console.log("Wallet private key", wallet.privateKey);
+      // console.log("Wallet mnemonic", wallet.mnemonic);
+
+      return this.prisma.user.create({
+        data: user,
+      });
+    }
   }
 
   async getUser(NFTurl: string): Promise<GetUserDto> {
-    return this.prisma.user.findUnique({
-      where: {
-        NFTurl: NFTurl,
-      },
-    });
+    try {
+      const user = await this.prisma.user.findUnique({
+        where: {
+          NFTurl: NFTurl,
+        },
+      });
+      return user;
+    } catch (error) {
+      throw new NotFoundException('Could not find user.');
+    }
   }
 }

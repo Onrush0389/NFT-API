@@ -1,9 +1,10 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, IsUrl } from 'class-validator';
+import { GetUserDto } from 'src/user/dto/get-user.dto';
 
 export class CreateTokenDto {
-  tokenId: string;
-  @IsString()
+  tokenId: number;
+  @IsUrl()
   @IsNotEmpty()
-  NFTurl: string;
+  NFT: string;
   hash: string;
 }

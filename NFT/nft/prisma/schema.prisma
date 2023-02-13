@@ -11,19 +11,19 @@ datasource db {
 }
 
 model user {
-  id            String  @id @default(auto()) @map("_id") @db.ObjectId
+  id            String @id @default(auto()) @map("_id") @db.ObjectId
   name          String
-  NFTurl        String  @unique
-  walletAddress String  @unique
-  privateKey    String  @unique
-  balance       Int     @default(0)
-  token         token[]
+  NFTurl        String @unique
+  walletAddress String @unique
+  privateKey    String @unique
+  balance       Int    @default(0)
+  tokens        token[]
 }
 
 model token {
-  id     String @id @default(auto()) @map("_id") @db.ObjectId
-  tokeId String @unique
-  owner  user   @relation(fields: [NFTurl], references: [NFTurl])
-  NFTurl String @unique
-  hash   String @unique
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  tokenId Int    @unique
+  owner   user   @relation(fields: [NFT], references: [NFTurl])
+  NFT     String @unique
+  hash    String @unique
 }

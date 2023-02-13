@@ -1,7 +1,8 @@
 import { GetUserDto } from 'src/user/dto/get-user.dto';
 
 export class GetTokenDto {
-  tokenId: string;
-  NFTurl: string;
+  id: string;
+  tokenId: number;
+  NFT: string;
   hash: string;
 }

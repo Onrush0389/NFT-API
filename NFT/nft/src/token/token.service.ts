@@ -7,7 +7,6 @@ import * as abi from './MyNFT.json';
 import { UserService } from '../user/user.service';
 import { GetTokenDto } from './dto/get-token.dto';
 import { Prisma } from '@prisma/client';
-import console from 'console';
 
 @Injectable()
 export class TokenService {
@@ -21,26 +20,58 @@ export class TokenService {
   url = 'https://rpc.debugchain.net';
   pk = process.env.PK!;
 
-  async createTokenId(NFTurl: string, hash: string): Promise<CreateTokenDto> {
-    //judge if the NFTurl is already in the database
+  async getToken(hash: string): Promise<any> {
+    try {
+      const token = await this.prisma.token.findUnique({
+        where: {
+          hash: hash,
+        },
+      });
+      return token;
+    } catch (error) {
+      throw new NotFoundException('Could not find token.');
+    }
+  }
 
-    const provider = new ethers.providers.JsonRpcProvider(this.url);
-    const wallet = new ethers.Wallet(this.pk, provider);
-    const contract = new ethers.Contract(this.contractAddress, abi.abi, wallet);
+  async getAllTokens(): Promise<any> {
+    const tokensall = await this.prisma.token.findMany();
+    return tokensall;
+  }
 
-    const owner = await this.userService.getUser(NFTurl);
-    const address = owner.walletAddress;
+  async createTokenId(newtoken: CreateTokenDto): Promise<GetTokenDto> {
+    //judge if the NFT is already in the database
+    const tokenpush = await this.getToken(newtoken.hash);
+    if (tokenpush) {
+      throw new NotFoundException('This NFT already exists.');
+    } else {
+      const provider = new ethers.providers.JsonRpcProvider(this.url);
+      const wallet = new ethers.Wallet(this.pk, provider);
+      const contract = new ethers.Contract(
+        this.contractAddress,
+        abi.abi,
+        wallet,
+      );
 
-    const tx = await contract.awardToken(address, NFTurl);
-    const receipt = await tx.wait();
+      const owner = await this.userService.getUser(newtoken.NFT);
+      const address = owner.walletAddress;
 
-    const token = {
-      tokenId: receipt.events[0].args[2].toNumber(),
-      NFTurl: NFTurl,
-      hash: hash,
-    };
+      const tx = await contract.awardToken(address, newtoken.NFT);
+      const receipt = await tx.wait();
 
-    this.tokens.push(token);
-    return token;
+      // const tokenew = {
+      //   tokenId: parseInt(receipt.events[0].args[2]),
+      //   NFT: newtoken.NFT,
+      //   hash: newtoken.hash,
+      // };
+      const tokenId = parseInt(receipt.events[0].args[2]);
+      console.log('tokenId', tokenId);
+
+      return this.prisma.token.create({
+        data: {
+          ...newtoken,
+          tokenId: tokenId,
+        },
+      });
+    }
   }
 }
